@@ -104,15 +104,15 @@ def getOptions():
 
   userOptions['Run Type'] = {}
   userOptions['Run Type']['type'] = "stringList"
-  userOptions['Run Type']['default'] = 1
+  userOptions['Run Type']['default'] = 0
   userOptions['Run Type']['values'] = \
-    ['Energy and forces',  'Molecular dynamics', 'Geometry Optimization'] #TODO: add the rest of run types
+    ['Energy and forces','Geometry Optimization','Molecular dynamics'] #TODO: add the rest of run types
 
   userOptions['Method'] = {}
   userOptions['Method']['type'] = "stringList"
   userOptions['Method']['default'] = 1
   userOptions['Method']['values'] = \
-    ['Electronic structure methods (DFT, ...)',  'Hybrid quantum classical', 'Molecular Mechanics'] #TODO: add the rest of methods  userOptions['Method'] = {}
+    ['Electronic structure methods (DFT)','Molecular Mechanics' ,'Hybrid quantum classical (Not yet supported)']#TODO: add the rest of methods  userOptions['Method'] = {}
 
   userOptions['Basis Set'] = {}
   userOptions['Basis Set']['type'] = "stringList"
@@ -136,8 +136,7 @@ def getOptions():
 
 
   return opts
-def generateUniqueElements(cml):
-
+def generateElements(cml, unique=0):
   e = ET.fromstring(cml)
   elements = []
   for i in e:
@@ -147,8 +146,10 @@ def generateUniqueElements(cml):
 
   for i in atomArray:
     elements.append(i.get('elementType'))
-
-  return set(elements)
+  if unique == 1:
+    return set(elements)
+  else: 
+    return elements
 
 def generateInputFile(cml, opts):
   global valencee
@@ -188,9 +189,9 @@ def generateInputFile(cml, opts):
   # Method
   cp2kfile += "  METHOD "
     # Task TODO: add other methods
-  if method == 'Electronic structure methods (DFT, ...)':
+  if method == 'Electronic structure methods (DFT)':
     cp2kfile += "QUICKSTEP"
-  elif method == 'Hybrid quantum classical':
+  elif method == 'Hybrid quantum classical (Not yet supported)':
     cp2kfile += "QMMM"
   elif method == 'Molecular Mechanics':
     cp2kfile += "FIST"
@@ -198,71 +199,133 @@ def generateInputFile(cml, opts):
     raise Exception("Invalid calculation type: %s"%method)
   cp2kfile += "\n"
 
-  cp2kfile += "  &SUBSYS\n"
-  # Kind
 
-  elements = generateUniqueElements(str(cml))
+  if method == 'Electronic structure methods (DFT)':
+    cp2kfile += "  &SUBSYS\n"
+    # Kind
 
-  for i in elements:
-    cp2kfile += "    &KIND " + str(i)
-    cp2kfile += "\n      ELEMENT   " + str(i)
-    cp2kfile += "\n      BASIS_SET   " + basisSet
-    cp2kfile += "\n      POTENTIAL   GTH-"+functional+"-q"+str(valencee[str(i)])+"\n"
-    cp2kfile += "    &END KIND\n"
+    uniqueElements = generateElements(str(cml), 1)
 
-  # Cell Angstrom
-  cp2kfile += "    &CELL\n"
-  cp2kfile += "    A     10.00000000    0.000000000    0.000000000\n"
-  cp2kfile += "    B     0.000000000    10.00000000    0.000000000\n"
-  cp2kfile += "    C     0.000000000    0.000000000    10.00000000\n"
-  cp2kfile += "    &END CELL \n"
+    for i in uniqueElements:
+      cp2kfile += "    &KIND " + str(i)
+      cp2kfile += "\n      ELEMENT   " + str(i)
+      cp2kfile += "\n      BASIS_SET   " + basisSet
+      cp2kfile += "\n      POTENTIAL   GTH-"+functional+"-q"+str(valencee[str(i)])+"\n"
+      cp2kfile += "    &END KIND\n"
 
-  # Coordinates
-  cp2kfile += "    &COORD\n"
-  cp2kfile +="$$coords:          S      x    y    z$$\n"
-  cp2kfile += "    &END COORD\n\n"
-  cp2kfile += "  &END SUBSYS\n"
-  # DFT
+    # Cell Angstrom
+    cp2kfile += "    &CELL\n"
+    cp2kfile += "    A     10.00000000    0.000000000    0.000000000\n"
+    cp2kfile += "    B     0.000000000    10.00000000    0.000000000\n"
+    cp2kfile += "    C     0.000000000    0.000000000    10.00000000\n"
+    cp2kfile += "    &END CELL \n"
 
-  cp2kfile += "  &DFT\n"
-  cp2kfile += "    BASIS_SET_FILE_NAME  BASIS_SET\n"
-  cp2kfile += "    POTENTIAL_FILE_NAME  GTH_POTENTIALS\n"
+    # Coordinates
+    cp2kfile += "    &COORD\n"
+    cp2kfile +="$$coords:          S      x    y    z$$\n"
+    cp2kfile += "    &END COORD\n\n"
+    cp2kfile += "  &END SUBSYS\n"
+    # DFT
 
-  cp2kfile += "    &QS\n"
-  cp2kfile += "      EPS_DEFAULT 1.0E-10\n"
-  cp2kfile += "    &END QS\n"
+    cp2kfile += "  &DFT\n"
+    cp2kfile += "    BASIS_SET_FILE_NAME  BASIS_SET\n"
+    cp2kfile += "    POTENTIAL_FILE_NAME  GTH_POTENTIALS\n"
 
-  cp2kfile += "    &MGRID\n"
-  cp2kfile += "      NGRIDS "+str(ngrids)+"\n"
-  cp2kfile += "      CUTOFF "+str(cutoff)+"\n"
-  cp2kfile += "      REL_CUTOFF "+str(rel_cutoff)+"\n"
-  cp2kfile += "    &END MGRID\n"
+    cp2kfile += "    &QS\n"
+    cp2kfile += "      EPS_DEFAULT 1.0E-10\n"
+    cp2kfile += "    &END QS\n"
 
-  cp2kfile += "    &XC\n"
-  cp2kfile += "      &XC_FUNCTIONAL "+functional+"\n"
-  cp2kfile += "      &END XC_FUNCTIONAL\n"
-  cp2kfile += "    &END XC\n"
+    cp2kfile += "    &MGRID\n"
+    cp2kfile += "      NGRIDS "+str(ngrids)+"\n"
+    cp2kfile += "      CUTOFF "+str(cutoff)+"\n"
+    cp2kfile += "      REL_CUTOFF "+str(rel_cutoff)+"\n"
+    cp2kfile += "    &END MGRID\n"
 
-  cp2kfile += "    &SCF\n"
-  cp2kfile += "      SCF_GUESS ATOMIC\n"
-  cp2kfile += "      EPS_SCF 1.0E-7\n"
-  cp2kfile += "      MAX_SCF 300\n"
-  cp2kfile += "      &DIAGONALIZATION\n"
-  cp2kfile += "        ALGORITHM STANDARD\n"
-  cp2kfile += "      &END DIAGONALIZATION\n"
-  cp2kfile += "      &MIXING\n"
-  cp2kfile += "        METHOD BROYDEN_MIXING\n"
-  cp2kfile += "        ALPHA 0.4\n"
-  cp2kfile += "        NBROYDEN 8\n"
-  cp2kfile += "      &END MIXING\n"
+    cp2kfile += "    &XC\n"
+    cp2kfile += "      &XC_FUNCTIONAL "+functional+"\n"
+    cp2kfile += "      &END XC_FUNCTIONAL\n"
+    cp2kfile += "    &END XC\n"
 
-  cp2kfile += "    &END SCF\n"
+    cp2kfile += "    &SCF\n"
+    cp2kfile += "      SCF_GUESS ATOMIC\n"
+    cp2kfile += "      EPS_SCF 1.0E-7\n"
+    cp2kfile += "      MAX_SCF 300\n"
+    cp2kfile += "      &DIAGONALIZATION\n"
+    cp2kfile += "        ALGORITHM STANDARD\n"
+    cp2kfile += "      &END DIAGONALIZATION\n"
+    cp2kfile += "      &MIXING\n"
+    cp2kfile += "        METHOD BROYDEN_MIXING\n"
+    cp2kfile += "        ALPHA 0.4\n"
+    cp2kfile += "        NBROYDEN 8\n"
+    cp2kfile += "      &END MIXING\n"
 
-  cp2kfile += "  &END DFT\n"
-  cp2kfile += "  &PRINT\n"
-  cp2kfile += "    &FORCES ON\n"
-  cp2kfile += "    &END FORCES\n"
-  cp2kfile += "  &END PRINT\n"
+    cp2kfile += "    &END SCF\n"
+
+    cp2kfile += "  &END DFT\n"
+    cp2kfile += "  &PRINT\n"
+    cp2kfile += "    &FORCES ON\n"
+    cp2kfile += "    &END FORCES\n"
+    cp2kfile += "  &END PRINT\n"
+#MM
+  
+
+  elif method == 'Molecular Mechanics':
+    cp2kfile += "  &SUBSYS\n"
+
+    # Cell Angstrom
+    cp2kfile += "    &CELL\n"
+    cp2kfile += "    A     10.00000000    0.000000000    0.000000000\n"
+    cp2kfile += "    B     0.000000000    10.00000000    0.000000000\n"
+    cp2kfile += "    C     0.000000000    0.000000000    10.00000000\n"
+    cp2kfile += "    &END CELL \n"
+
+    # Coordinates
+    cp2kfile += "    &COORD\n"
+    cp2kfile +="$$coords:          S      x    y    z$$\n"
+    cp2kfile += "    &END COORD\n\n"
+    cp2kfile += "    &TOPOLOGY\n"
+    cp2kfile += "      CHARGE_BETA\n"
+    cp2kfile += "      CONNECTIVITY AMBER\n"
+    cp2kfile += "      CONN_FILE_NAME ! Add file name that contains connectivity data\n"
+    cp2kfile += "    &END TOPOLOGY \n"
+
+    cp2kfile += "    &PRINT\n"
+    cp2kfile += "      &TOPOLOGY_INFO\n"
+    cp2kfile += "        AMBER_INFO\n"
+    cp2kfile += "      &END\n"
+    cp2kfile += "    &END \n"
+
+    cp2kfile += "  &END SUBSYS\n"
+
+    cp2kfile += "  &MM\n"
+
+    cp2kfile += "    &FORCEFIELD\n"
+    cp2kfile += "      ! Add file name that contains force field parameters\n"
+    cp2kfile += "      parmtype AMBER\n"
+      
+    cp2kfile += "      &SPLINE\n"
+    cp2kfile += "        EMAX_SPLINE 10000\n"
+    cp2kfile += "      &END SPLINE\n"
+    cp2kfile += "    &END FORCEFIELD\n"
+
+    cp2kfile += "    &POISSON\n"
+    cp2kfile += "      &EWALD\n"
+    cp2kfile += "        EWALD_TYPE SPME\n"
+    cp2kfile += "        ALPHA .36\n"
+    cp2kfile += "        GMAX 128\n"
+    cp2kfile += "      &END EWALD\n"
+    cp2kfile += "    &END POISSON\n"
+
+    cp2kfile += "    &PRINT\n"
+    cp2kfile += "      &FF_INFO\n"
+    cp2kfile += "      $END\n"
+    cp2kfile += "      &FF_PARAMETER_FILE\n"
+    cp2kfile += "      &END\n"
+    cp2kfile += "    &END PRINT\n"
+
+    cp2kfile += "  &END MM\n"
+
+
 
   cp2kfile += "&END FORCE_EVAL\n"
 
