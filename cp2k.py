@@ -106,7 +106,7 @@ def getOptions():
   userOptions['Run Type']['type'] = "stringList"
   userOptions['Run Type']['default'] = 0
   userOptions['Run Type']['values'] = \
-    ['Energy and forces','Geometry Optimization','Molecular dynamics'] #TODO: add the rest of run types
+    ['Energy','Energy and forces','Geometry Optimization','Molecular dynamics'] #TODO: add the rest of run types
 
   userOptions['Method'] = {}
   userOptions['Method']['type'] = "stringList"
@@ -136,6 +136,7 @@ def getOptions():
 
 
   return opts
+
 def generateElements(cml, unique=0):
   e = ET.fromstring(cml)
   elements = []
@@ -170,7 +171,9 @@ def generateInputFile(cml, opts):
 
   # Task TODO: add other run types
   cp2kfile += "  RUN_TYPE "
-  if calculate == 'Energy and forces':
+  if calculate == 'Energy':
+    cp2kfile += "ENERGY"
+  elif calculate == 'Energy and forces':
     cp2kfile += "ENERGY_FORCE"
   elif calculate == 'Molecular dynamics':
     cp2kfile += "MOLECULAR_DYNAMICS"
@@ -301,7 +304,7 @@ def generateInputFile(cml, opts):
 
     cp2kfile += "    &FORCEFIELD\n"
     cp2kfile += "      ! Add file name that contains force field parameters\n"
-    cp2kfile += "      parmtype AMBER\n"
+    cp2kfile += "      PARMTYPE AMBER\n"
       
     cp2kfile += "      &SPLINE\n"
     cp2kfile += "        EMAX_SPLINE 10000\n"
