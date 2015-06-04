@@ -1,6 +1,6 @@
 # CP2K input generator for Avogadro 2
 
-**Note:** This software is in early development stage and should be used for
+**Note:** This software is **DISCONTINUED** since we switched to the C++/Qt interface and should be used for
 experimentation only. There is absolutely no guarantee of correctness of
 generated input files; they might produce unrealistic results, crash randomly,
 or scare your cat. Or any combination of those.
