@@ -1,19 +1,31 @@
-# CP2K input generator for Avogadro 2 written in Python
+# CP2K input generator for Avogadro 2
 
-**Note:** This software is **DISCONTINUED** since we switched to the C++/Qt interface and should be used for
+**Note:** This software is in early developement stage and should be used for
 experimentation only. There is absolutely no guarantee of correctness of
 generated input files; they might produce unrealistic results, crash randomly,
 or scare your cat. Or any combination of those.
 
+## Description
+
+[CP2K](http://cp2k.org/) is a program to perform atomistic and molecular
+simulations of solid state, liquid, molecular, and biological systems.
+
+[Avogadro 2](http://www.openchemistry.org/projects/avogadro2/) is a chemical
+editor and visualization application, and also a set of reusable software
+libraries written in C++.
+
+Avogadro 2 already provides input generators for various quantum chemistry
+software such as [GAMESS](http://www.msg.ameslab.gov/gamess/) and
+[NWChem](http://www.nwchem-sw.org/). Our goal is to provide support for
+generating CP2K input files.
+
 ## Installation
 
-Copy the file `cp2k.py` into
+Copy all the files except the `scripts` folder into:
 
-* `Avogadro2/lib/avogadro2/scripts/inputGenerator` (Windows)
-* `<prefix>/lib/avogadro2/scripts/inputGenerator` (Debian)
-* `<prefix>/lib64/avogadro2/scripts/inputGenerator` (Fedora)
+* `<prefix>/avogadrolibs/avogadro/qtplugins` (Linux)
 
-and restart Avogadro 2. If you get `CP2K` entry in `Quantum\Input Generators`
+and recompile Avogadro 2. If you get `CP2K` entry in `Quantum\Input Generators`
 menu, the installation was successful.
 
 ## Usage
