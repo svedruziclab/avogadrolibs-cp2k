@@ -103,6 +103,16 @@ enum ChargeOption {
   ChargeCount
 };
 
+//MM tab
+enum EWALDTypeOption{
+	EWALD = 0,
+	NONE,
+	PME,
+	SPME,
+
+	EWALDTypeCount
+};
+
 Cp2kInputDialog::Cp2kInputDialog(QWidget *parent_, Qt::WindowFlags f)
   : QDialog( parent_, f ),
     m_molecule(NULL),
@@ -176,9 +186,16 @@ void Cp2kInputDialog::connectBasic()
            this, SLOT( updatePreviewText() ) );
   connect( ui.chargeCombo, SIGNAL( currentIndexChanged( int ) ),
            this, SLOT( updatePreviewText() ) );
-  connect( ui.emaxSplineSpin, SIGNAL( valueChanged( int ) ),
+  connect( ui.ewaldtypeCombo, SIGNAL( currentIndexChanged( int ) ),
            this, SLOT( updatePreviewText() ) );
-
+  connect( ui.emaxSplineSpin, SIGNAL( valueChanged( double ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.rcutnbSplineSpin, SIGNAL( valueChanged( double ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.ewaldaplhaSpin, SIGNAL( valueChanged( double ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.ewaldgmaxSpin, SIGNAL( valueChanged( double ) ),
+           this, SLOT( updatePreviewText() ) );
 }
 
 void Cp2kInputDialog::connectPreview()
@@ -202,6 +219,7 @@ void Cp2kInputDialog::buildOptions()
   buildStateOptions();
   buildMethodOptions();
   buildChargeOptions();
+  buildEWALDTypeOptions();
 }
 
 void Cp2kInputDialog::updateOptionCache()
@@ -213,6 +231,8 @@ void Cp2kInputDialog::updateOptionCache()
   m_optionCache.insert(ui.stateCombo, ui.stateCombo->currentIndex());
   m_optionCache.insert(ui.methodCombo, ui.methodCombo->currentIndex());
   m_optionCache.insert(ui.chargeCombo, ui.chargeCombo->currentIndex());
+  m_optionCache.insert(ui.ewaldtypeCombo, ui.ewaldtypeCombo->currentIndex());
+
 
 }
 
@@ -369,6 +389,30 @@ void Cp2kInputDialog::buildChargeOptions()
   }
 }
 
+void Cp2kInputDialog::buildEWALDTypeOptions()
+{
+  for (int i = 0; i < static_cast<int>(EWALDTypeCount); ++i) {
+    QString text = "";
+    switch (static_cast<EWALDTypeOption>(i)) {
+    case EWALD:
+      text = tr("EWALD");
+      break;
+    case NONE:
+      text = tr("NONE");
+      break;
+    case PME:
+      text = tr("PME");
+      break;
+    case SPME:
+      text = tr("SPME");
+      break;
+    default:
+      break;
+    }
+    ui.ewaldtypeCombo->addItem(text);
+  }
+}
+
 void Cp2kInputDialog::setBasicDefaults()
 {
   ui.titleEdit->setText(QString());
@@ -378,7 +422,7 @@ void Cp2kInputDialog::setBasicDefaults()
   ui.stateCombo->setCurrentIndex( StateGas );
   ui.methodCombo->setCurrentIndex( DFT );
   ui.chargeCombo->setCurrentIndex( ChargeNeutral );
-
+  ui.ewaldtypeCombo->setCurrentIndex( SPME );
 
 }
 
@@ -397,61 +441,61 @@ QString Cp2kInputDialog::generateJobTitle() const
 
 void Cp2kInputDialog::updatePreviewText()
 {
-	  std::map<char,int> valencee;
+	  std::map<QString,int> valencee;
 
-	  valencee['H'] = 1;
-	  valencee['He'] = 2;
-	  valencee['Li'] = 3;
-	  valencee['Be'] = 4;
-	  valencee['B'] = 3;
-	  valencee['C'] = 4;
-	  valencee['N'] = 5;
-	  valencee['O'] = 6;
-	  valencee['F'] = 7;
-	  valencee['Ne'] = 8;
-	  valencee['Na'] = 9;
-	  valencee['Mg'] = 10;
-	  valencee['Al'] = 3;
-	  valencee['Si'] = 4;
-	  valencee['P'] = 5;
-	  valencee['S'] = 6;
-	  valencee['Cl'] = 7;
-	  valencee['Ar'] = 8;
-	  valencee['K'] = 9;
-	  valencee['Ca'] = 10;
-	  valencee['Sc'] = 11;
-	  valencee['Ti'] = 12;
-	  valencee['V'] = 13;
-	  valencee['Cr'] = 14;
-	  valencee['Mn'] = 15;
-	  valencee['Fe'] = 16;
-	  valencee['Co'] = 17;
-	  valencee['Ni'] = 18;
-	  valencee['Cu'] = 11;
-	  valencee['Zn'] = 12;
-	  valencee['Ga'] = 13;
-	  valencee['Ge'] = 4;
-	  valencee['As'] = 5;
-	  valencee['Se'] = 6;
-	  valencee['Br'] = 7;
-	  valencee['Kr'] = 8;
-	  valencee['As'] = 5;
-	  valencee['Sr'] = 10;
-	  valencee['Y'] = 11;
-	  valencee['Zr'] = 12;
-	  valencee['Mo'] = 14;
-	  valencee['Ru'] = 16;
-	  valencee['Rh'] = 17;
-	  valencee['Pd'] = 18;
-	  valencee['Ag'] = 11;
-	  valencee['In'] = 13;
-	  valencee['Sb'] = 5;
-	  valencee['Te'] = 6;
-	  valencee['I'] = 7;
-	  valencee['Ba'] = 10;
-	  valencee['W'] = 14;
-	  valencee['Au'] = 11;
-	  valencee['Bi'] = 15;
+	  valencee["H"] = 1;
+	  valencee["He"] = 2;
+	  valencee["Li"] = 3;
+	  valencee["Be"] = 4;
+	  valencee["B"] = 3;
+	  valencee["C"] = 4;
+	  valencee["N"] = 5;
+	  valencee["O"] = 6;
+	  valencee["F"] = 7;
+	  valencee["Ne"] = 8;
+	  valencee["Na"] = 9;
+	  valencee["Mg"] = 10;
+	  valencee["Al"] = 3;
+	  valencee["Si"] = 4;
+	  valencee["P"] = 5;
+	  valencee["S"] = 6;
+	  valencee["Cl"] = 7;
+	  valencee["Ar"] = 8;
+	  valencee["K"] = 9;
+	  valencee["Ca"] = 10;
+	  valencee["Sc"] = 11;
+	  valencee["Ti"] = 12;
+	  valencee["V"] = 13;
+	  valencee["Cr"] = 14;
+	  valencee["Mn"] = 15;
+	  valencee["Fe"] = 16;
+	  valencee["Co"] = 17;
+	  valencee["Ni"] = 18;
+	  valencee["Cu"] = 11;
+	  valencee["Zn"] = 12;
+	  valencee["Ga"] = 13;
+	  valencee["Ge"] = 4;
+	  valencee["As"] = 5;
+	  valencee["Se"] = 6;
+	  valencee["Br"] = 7;
+	  valencee["Kr"] = 8;
+	  valencee["As"] = 5;
+	  valencee["Sr"] = 10;
+	  valencee["Y"] = 11;
+	  valencee["Zr"] = 12;
+	  valencee["Mo"] = 14;
+	  valencee["Ru"] = 16;
+	  valencee["Rh"] = 17;
+	  valencee["Pd"] = 18;
+	  valencee["Ag"] = 11;
+	  valencee["In"] = 13;
+	  valencee["Sb"] = 5;
+	  valencee["Te"] = 6;
+	  valencee["I"] = 7;
+	  valencee["Ba"] = 10;
+	  valencee["W"] = 14;
+	  valencee["Au"] = 11;
+	  valencee["Bi"] = 15;
 
 
   // If the dialog is not shown, delay the update in case we need to prompt the
@@ -498,8 +542,16 @@ void Cp2kInputDialog::updatePreviewText()
         static_cast<MethodOption>(ui.methodCombo->currentIndex()));
   ChargeOption charge(
         static_cast<ChargeOption>(ui.chargeCombo->currentIndex()));
+  EWALDTypeOption EWALDType(
+        static_cast<EWALDTypeOption>(ui.ewaldtypeCombo->currentIndex()));
 
-  QString emaxSpline = QString::number(ui.emaxSplineSpin->value());
+ QString emaxSpline = QString::number(ui.emaxSplineSpin->value());
+ QString rcutnb = QString::number(ui.rcutnbSplineSpin->value());
+ QString ewaldalpha = QString::number(ui.ewaldalphaSpin->value());
+ QString ewaldgmax = QString::number(ui.ewaldgmaxSpin->value());
+
+
+
 
   // Disable basis selection for semiempirical methods.
   //ui.basisCombo->setEnabled(theory != TheoryAM1 && theory != TheoryPM3);
@@ -513,6 +565,7 @@ void Cp2kInputDialog::updatePreviewText()
   QString gmethod;
   QString mult;
   QString iCharg;
+  QString ewaldtype;
 
   // Extra options for lines
   QString extraBasis;
@@ -607,6 +660,23 @@ void Cp2kInputDialog::updatePreviewText()
     break;
   }
 
+  switch (EWALDType) {
+  case EWALD:
+    ewaldtype = "EWALD";
+    break;
+  case NONE:
+	ewaldtype = "NONE";
+    break;
+  case PME:
+	ewaldtype = "PME";
+    break;
+  case SPME:
+  	ewaldtype = "SPME";
+    break;
+  default:
+    break;
+  }
+
   switch (charge) {
   case ChargeDication:
     iCharg = "2";
@@ -644,7 +714,6 @@ void Cp2kInputDialog::updatePreviewText()
 */
  file += "&GLOBAL\n";
  file += QString("  PROJECT %1\n").arg(title);
- //file += QString("  EMAX_SPLINE %1\n").arg(emaxSpline);
 
  file += QString("  RUN_TYPE %1\n").arg(runTyp);
 
@@ -673,10 +742,11 @@ void Cp2kInputDialog::updatePreviewText()
      }
      if (inlist){
     	 atomList.push_back(atom.atomicNumber());
-     file += QString("    &KIND %1\n").arg(Core::Elements::symbol(atom.atomicNumber()));
+    	 QString symbol = Core::Elements::symbol(atom.atomicNumber());
+     file += QString("    &KIND %1\n").arg(symbol);
      file += QString("        ELEMENT %1\n").arg(Core::Elements::symbol(atom.atomicNumber()));
      file += QString("        BASIS_SET %1\n").arg(gbasis);
-     //file += QString("        POTENTIAL GTH-%1-q%2\n").arg(gfunc).arg(gvalence);
+     file += QString("        POTENTIAL GTH-%1-q%2\n").arg(gfunc).arg(valencee[symbol]);
      }
    }
  }
@@ -740,7 +810,7 @@ if(gmethod == "DFT") {
   file += "    &END FORCES\n";
   file += "  &END PRINT\n";
 }
-else if(gfunc == "FIST") {
+else if(gmethod == "FIST") {
 
 	 file += "    &TOPOLOGY\n";
 	    file += "      CHARGE_BETA\n";
@@ -758,19 +828,20 @@ else if(gfunc == "FIST") {
 	    file += "  &MM\n";
 
 	    file += "    &FORCEFIELD\n";
-	    file += "      ! Add file name that contains force field parameters\n";
+	    file += "      PARM_FILE_NAME ! Add file name that contains force field parameters\n";
 	    file += "      PARMTYPE AMBER\n";
 
 	    file += "      &SPLINE\n";
-	    file += "        EMAX_SPLINE 10000\n";
+	    file += QString("        EMAX_SPLINE %1\n").arg(emaxSpline);
+	    file += QString("        RCUT_NB %1\n").arg(rcutnb);
 	    file += "      &END SPLINE\n";
 	    file += "    &END FORCEFIELD\n";
 
 	    file += "    &POISSON\n";
 	    file += "      &EWALD\n";
-	    file += "        EWALD_TYPE SPME\n";
-	    file += "        ALPHA .36\n";
-	    file += "        GMAX 128\n";
+	    file += QString("        EWALD_TYPE %1\n").arg(ewaldtype);
+	    file += QString("        ALPHA %1\n").arg(ewaldalpha);
+	    file += QString("        GMAX %1\n").arg(ewaldgmax);
 	    file += "      &END EWALD\n";
 	    file += "    &END POISSON\n";
 
