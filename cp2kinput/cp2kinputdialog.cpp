@@ -112,6 +112,29 @@ enum EWALDTypeOption{
 
 	EWALDTypeCount
 };
+//QM tab
+enum SCFGuessOption{
+	ATOMIC = 0,
+	CORE,
+	DENSITIES,
+	HISTORY_RESTART,
+	MOPAC,
+	NONE,
+	RANDOM,
+	RESTART,
+	SPARSE,
+
+	SCFGuessCount
+}
+
+enum OTMinimizerOption{
+	CG = 0,
+	BROYDEN,
+	DIIS,
+	SD,
+
+	OTMionimizerCount
+}
 
 Cp2kInputDialog::Cp2kInputDialog(QWidget *parent_, Qt::WindowFlags f)
   : QDialog( parent_, f ),
@@ -196,6 +219,22 @@ void Cp2kInputDialog::connectBasic()
            this, SLOT( updatePreviewText() ) );
   connect( ui.ewaldgmaxSpin, SIGNAL( valueChanged( double ) ),
            this, SLOT( updatePreviewText() ) );
+  connect( ui.lsdcheckBox, SIGNAL( stateChanged( bool ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.maxscfspinBox, SIGNAL( valueChanged( int ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.epsscfSpinBox, SIGNAL( valueChanged( double ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.outerMaxscfSpinBox, SIGNAL( valueChanged( int ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.outerEpsscfSpinBox, SIGNAL( valueChanged( double ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.scfguessComboBox, SIGNAL( currentIndexChanged( int ) ),
+           this, SLOT( updatePreviewText() ) );
+  connect( ui.otminimizerComboBox, SIGNAL( currentIndexChanged( int ) ),
+           this, SLOT( updatePreviewText() ) );
+
+
 }
 
 void Cp2kInputDialog::connectPreview()
@@ -220,6 +259,8 @@ void Cp2kInputDialog::buildOptions()
   buildMethodOptions();
   buildChargeOptions();
   buildEWALDTypeOptions();
+  buildSCFGuessOptions();
+  buildOTMinimizerOPptions();
 }
 
 void Cp2kInputDialog::updateOptionCache()
@@ -232,7 +273,8 @@ void Cp2kInputDialog::updateOptionCache()
   m_optionCache.insert(ui.methodCombo, ui.methodCombo->currentIndex());
   m_optionCache.insert(ui.chargeCombo, ui.chargeCombo->currentIndex());
   m_optionCache.insert(ui.ewaldtypeCombo, ui.ewaldtypeCombo->currentIndex());
-
+  m_optionCache.insert(ui.scfguessComboBox, ui.scfguessComboBox->currentIndex());
+  m_optionCache.insert(ui.otminimizerComboBox, ui.otminimizerComboBox->currentIndex());
 
 }
 
@@ -412,6 +454,67 @@ void Cp2kInputDialog::buildEWALDTypeOptions()
     ui.ewaldtypeCombo->addItem(text);
   }
 }
+void Cp2kInputDialog::buildSCFGuessOptions()
+{
+  for (int i = 0; i < static_cast<int>(SCFGuessCount); ++i) {
+    QString text = "";
+    switch (static_cast<SCFGuessOption>(i)) {
+    case ATOMIC:
+      text = tr("ATOMIC");
+      break;
+    case CORE:
+      text = tr("CORE");
+      break;
+    case DENSITIES:
+      text = tr("DENSITIES");
+      break;
+    case HISTORY_RESTART:
+      text = tr("HISTORY_RESTART");
+      break;
+    case MOPAC:
+      text = tr("MOPAC");
+      break;
+    case NONE:
+      text = tr("NONE");
+      break;
+    case RANDOM:
+      text = tr("RANDOM");
+      break;
+    case RESTART:
+      text = tr("RESTART");
+      break;
+    case SPARSE:
+      text = tr("SPARSE");
+      break;
+    default:
+      break;
+    }
+    ui.scfguessComboBox->addItem(text);
+  }
+}
+void Cp2kInputDialog::buiildOTMinimizerOptions()
+{
+  for (int i = 0; i < static_cast<int>(EWALDTypeCount); ++i) {
+    QString text = "";
+    switch (static_cast<EWALDTypeOption>(i)) {
+    case BROYDEN:
+      text = tr("BROYDEN");
+      break;
+    case CG:
+      text = tr("Conjugate Gradients");
+      break;
+    case DIIS:
+      text = tr("DIIS");
+      break;
+    case SD:
+      text = tr("Steepest descent");
+      break;
+    default:
+      break;
+    }
+    ui.otminimizerComboBox->addItem(text);
+  }
+}
 
 void Cp2kInputDialog::setBasicDefaults()
 {
@@ -423,6 +526,8 @@ void Cp2kInputDialog::setBasicDefaults()
   ui.methodCombo->setCurrentIndex( DFT );
   ui.chargeCombo->setCurrentIndex( ChargeNeutral );
   ui.ewaldtypeCombo->setCurrentIndex( SPME );
+  ui.scfguessComboBox->setCurrentIndex( ATOMIC );
+  ui.otminimizerComboBox->setCurrentIndex( CG );
 
 }
 
@@ -549,6 +654,12 @@ void Cp2kInputDialog::updatePreviewText()
  QString rcutnb = QString::number(ui.rcutnbSplineSpin->value());
  QString ewaldalpha = QString::number(ui.ewaldalphaSpin->value());
  QString ewaldgmax = QString::number(ui.ewaldgmaxSpin->value());
+
+ QString lsd = QString::number(ui.lsdcheckBox->isChecked());
+ QString maxSCF = QString::number(ui.maxscfspinBox->value());
+ QString epsSCF = QString::number(ui.epsscfSpinBox->value());
+ QString outermaxSCF = QString::number(ui.outerMaxscfSpinBox->value());
+ QString outerepsSCF = QString::number(ui.outerEpsscfSpinBox->value());
 
 
 
