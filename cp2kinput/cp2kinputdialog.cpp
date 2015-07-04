@@ -494,9 +494,9 @@ void Cp2kInputDialog::buildSCFGuessOptions()
 }
 void Cp2kInputDialog::buiildOTMinimizerOptions()
 {
-  for (int i = 0; i < static_cast<int>(EWALDTypeCount); ++i) {
+  for (int i = 0; i < static_cast<int>(OTMinimizerCount); ++i) {
     QString text = "";
-    switch (static_cast<EWALDTypeOption>(i)) {
+    switch (static_cast<OTMinimizerOption>(i)) {
     case BROYDEN:
       text = tr("BROYDEN");
       break;
@@ -649,23 +649,22 @@ void Cp2kInputDialog::updatePreviewText()
         static_cast<ChargeOption>(ui.chargeCombo->currentIndex()));
   EWALDTypeOption EWALDType(
         static_cast<EWALDTypeOption>(ui.ewaldtypeCombo->currentIndex()));
+  SCFGuessOption SCFGuess(
+         static_cast<SCFGuessOption>(ui.scfguessComboBox->currentIndex()));
+  OTMinimizerOption OTMinimizer(
+         static_cast<OTMinimizerOption>(ui.otminimizerComboBox->currentIndex()));
 
  QString emaxSpline = QString::number(ui.emaxSplineSpin->value());
  QString rcutnb = QString::number(ui.rcutnbSplineSpin->value());
  QString ewaldalpha = QString::number(ui.ewaldalphaSpin->value());
  QString ewaldgmax = QString::number(ui.ewaldgmaxSpin->value());
 
- QString lsd = QString::number(ui.lsdcheckBox->isChecked());
+ QString lsdbool = QString::number(ui.lsdcheckBox->isChecked());
+
  QString maxSCF = QString::number(ui.maxscfspinBox->value());
  QString epsSCF = QString::number(ui.epsscfSpinBox->value());
  QString outermaxSCF = QString::number(ui.outerMaxscfSpinBox->value());
  QString outerepsSCF = QString::number(ui.outerEpsscfSpinBox->value());
-
-
-
-
-  // Disable basis selection for semiempirical methods.
-  //ui.basisCombo->setEnabled(theory != TheoryAM1 && theory != TheoryPM3);
 
   // Generate text.
   //   Variables:
@@ -675,8 +674,12 @@ void Cp2kInputDialog::updatePreviewText()
   QString gfunc;
   QString gmethod;
   QString mult;
-  QString iCharg;
   QString ewaldtype;
+  QString lsd;
+
+
+  QString scfGuess;
+  QString otMinimizer;
 
   // Extra options for lines
   QString extraBasis;
@@ -693,15 +696,12 @@ void Cp2kInputDialog::updatePreviewText()
     break;
   case CalculateEnergyAndForces:
     runTyp = "ENERGY_FORCE";
-    //statPt = " $STATPT OPTTOL=0.0001 NSTEP=20 $END\n";
     break;
   case CalculateMolecularDynamics:
     runTyp = "MOLECULAR_DYNAMICS";
-   // statPt = " $STATPT OPTTOL=0.0001 NSTEP=20 $END\n";
     break;
   case CalculateGeometryOptimization:
     runTyp = "GEO_OPT";
-    //force = " $FORCE METHOD=ANALYTIC VIBANL=.TRUE. $END\n";
     break;
   default:
     break;
@@ -788,41 +788,68 @@ void Cp2kInputDialog::updatePreviewText()
     break;
   }
 
-  switch (charge) {
-  case ChargeDication:
-    iCharg = "2";
+  switch (SCFGuess) {
+   case ATOMIC:
+     scfGuess = "ATOMIC";
+     break;
+   case CORE:
+	   scfGuess = "CORE";
+     break;
+   case DENSITIES:
+	   scfGuess = "DENSITIES";
+     break;
+   case HISTORY_RESTART:
+	   scfGuess = "HISTORY_RESTART";
+     break;
+   case MOPAC:
+	   scfGuess = "MOPAC";
+     break;
+   case NONE:
+	   scfGuess = "NONE";
+     break;
+   case RANDOM:
+	   scfGuess = "RANDOM";
+     break;
+   case RESTART:
+	   scfGuess = "RESTART";
+     break;
+   case SPARSE:
+	   scfGuess = "SPARSE";
+     break;
+   default:
+     break;
+   }
+
+  switch (OTMinimizer) {
+  case BROYDEN:
+    otMinimizer = "BROYDEN";
     break;
-  case ChargeCation:
-    iCharg = "1";
+  case CG:
+	  otMinimizer = "CG";
     break;
-  case ChargeNeutral:
-    iCharg = "0";
+  case DIIS:
+	  otMinimizer = "DIIS";
     break;
-  case ChargeAnion:
-    iCharg = "-1";
-    break;
-  case ChargeDianion:
-    iCharg = "-2";
+  case SD:
+	  otMinimizer = "SD";
     break;
   default:
     break;
   }
+  switch (lsdbool) {
+  case true:
+    lsd = "TRUE";
+    break;
+  case false:
+	lsd = "FALSE";
+    break;
+
+  }
+
 
   // build up the input file:
   QString file;
-  /*
-  file += QString(" $BASIS GBASIS=%1%2 $END\n").arg(gBasis, extraBasis);
-  file += pcm;
-  file += QString(" $CONTRL SCFTYP=%1 RUNTYP=%2 ICHARG=%3 MULT=%4%5 $END\n")
-      .arg(scfTyp, runTyp, iCharg, mult, extraContrl);
-  file += statPt;
-  file += force;
-  file += "\n";
-  file += " $DATA\n";
-  file += "Title\n";
-  file += "C1\n";
 
-*/
  file += "&GLOBAL\n";
  file += QString("  PROJECT %1\n").arg(title);
 
@@ -884,22 +911,38 @@ if(gmethod == "DFT") {
   file += "  &DFT\n";
   file += "    BASIS_SET_FILE_NAME  BASIS_SET\n";
   file += "    POTENTIAL_FILE_NAME  GTH_POTENTIALS\n";
-
+  if ()
   file += "    &QS\n";
   file += "      EPS_DEFAULT 1.0E-10\n";
   file += "    &END QS\n";
-/*
+  file += QString("    LSD %1\n").arg(lsd);
+
+
   file += "    &MGRID\n";
-  file += "      NGRIDS "+str(ngrids)+"\n"
-  file += "      CUTOFF "+str(cutoff)+"\n"
-  file += "      REL_CUTOFF "+str(rel_cutoff)+"\n"
+  file += "      CUTOFF 280\n";
+  file += "      COMMENSURATE\n";
   file += "    &END MGRID\n";
+
+  file += "    &SCF\n";
+  file += QString("      MAX_SCF %1\n").arg(maxSCF);
+  file += QString("      EPS_SCF %1\n").arg(epsSCF);
+  file += QString("      SCF_GUESS %1\n").arg(scfGuess);
+  file += "      &OUTER_SCF\n";
+  file += QString("        MAX_SCF %1\n").arg(outermaxSCF);
+  file += QString("        EPS_SCF %1\n").arg(outerepsSCF);
+  file += "      &END\n";
+  file += "      &OT T\n";
+  file += QString("        MINIMIZER %1\n").arg(otMinimizer);
+  file += "        N_DIIS 7\n";
+  file += "      &END OT\n";
+
+  file += "    &END SCF\n";
 
   file += "    &XC\n";
   file += "      &XC_FUNCTIONAL "+functional+"\n";
   file += "      &END XC_FUNCTIONAL\n";
   file += "    &END XC\n";
-*/
+
   file += "    &SCF\n";
   file += "      SCF_GUESS ATOMIC\n";
   file += "      EPS_SCF 1.0E-7\n";
