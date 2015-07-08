@@ -88,7 +88,7 @@ private:
   void buildEWALDTypeOptions();
 
   void buildSCFGuessOptions();
-  void buildOTMinimizerOPptions();
+  void buildOTMinimizerOptions();
 
 
   void setBasicDefaults();

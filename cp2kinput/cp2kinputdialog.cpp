@@ -260,7 +260,7 @@ void Cp2kInputDialog::buildOptions()
   buildChargeOptions();
   buildEWALDTypeOptions();
   buildSCFGuessOptions();
-  buildOTMinimizerOPptions();
+  buildOTMinimizerOptions();
 }
 
 void Cp2kInputDialog::updateOptionCache()
