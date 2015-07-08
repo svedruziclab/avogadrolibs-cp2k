@@ -439,7 +439,7 @@ void Cp2kInputDialog::buildEWALDTypeOptions()
     case EWALD:
       text = tr("EWALD");
       break;
-    case NONE:
+    case ewaldNONE:
       text = tr("NONE");
       break;
     case PME:
@@ -474,7 +474,7 @@ void Cp2kInputDialog::buildSCFGuessOptions()
     case MOPAC:
       text = tr("MOPAC");
       break;
-    case NONE:
+    case scfNONE:
       text = tr("NONE");
       break;
     case RANDOM:
