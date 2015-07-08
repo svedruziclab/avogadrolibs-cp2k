@@ -125,7 +125,7 @@ enum SCFGuessOption{
 	SPARSE,
 
 	SCFGuessCount
-}
+};
 
 enum OTMinimizerOption{
 	CG = 0,
@@ -134,7 +134,7 @@ enum OTMinimizerOption{
 	SD,
 
 	OTMionimizerCount
-}
+};
 
 Cp2kInputDialog::Cp2kInputDialog(QWidget *parent_, Qt::WindowFlags f)
   : QDialog( parent_, f ),
