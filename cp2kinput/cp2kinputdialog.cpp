@@ -492,7 +492,7 @@ void Cp2kInputDialog::buildSCFGuessOptions()
     ui.scfguessComboBox->addItem(text);
   }
 }
-void Cp2kInputDialog::buiildOTMinimizerOptions()
+void Cp2kInputDialog::buildOTMinimizerOptions()
 {
   for (int i = 0; i < static_cast<int>(OTMinimizerCount); ++i) {
     QString text = "";
