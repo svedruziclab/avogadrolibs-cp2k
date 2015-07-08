@@ -659,8 +659,6 @@ void Cp2kInputDialog::updatePreviewText()
  QString ewaldalpha = QString::number(ui.ewaldalphaSpin->value());
  QString ewaldgmax = QString::number(ui.ewaldgmaxSpin->value());
 
- QString lsdbool = QString::number(ui.lsdcheckBox->isChecked());
-
  QString maxSCF = QString::number(ui.maxscfspinBox->value());
  QString epsSCF = QString::number(ui.epsscfSpinBox->value());
  QString outermaxSCF = QString::number(ui.outerMaxscfSpinBox->value());
@@ -911,7 +909,9 @@ if(gmethod == "DFT") {
   file += "  &DFT\n";
   file += "    BASIS_SET_FILE_NAME  BASIS_SET\n";
   file += "    POTENTIAL_FILE_NAME  GTH_POTENTIALS\n";
-  if ()
+  if (ui.lsdcheckBox->isChecked())
+	  file += "    LSD TRUE\n";
+
   file += "    &QS\n";
   file += "      EPS_DEFAULT 1.0E-10\n";
   file += "    &END QS\n";
