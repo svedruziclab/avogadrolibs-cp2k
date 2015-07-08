@@ -939,7 +939,7 @@ if(gmethod == "DFT") {
   file += "    &END SCF\n";
 
   file += "    &XC\n";
-  file += "      &XC_FUNCTIONAL "+functional+"\n";
+  file += QString("      &XC_FUNCTIONAL %1\n").arg(functional);
   file += "      &END XC_FUNCTIONAL\n";
   file += "    &END XC\n";
 
