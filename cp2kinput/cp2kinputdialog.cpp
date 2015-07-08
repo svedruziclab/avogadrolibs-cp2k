@@ -106,7 +106,7 @@ enum ChargeOption {
 //MM tab
 enum EWALDTypeOption{
 	EWALD = 0,
-	NONE,
+	ewaldNONE,
 	PME,
 	SPME,
 
@@ -119,7 +119,7 @@ enum SCFGuessOption{
 	DENSITIES,
 	HISTORY_RESTART,
 	MOPAC,
-	NONE,
+	scfNONE,
 	RANDOM,
 	RESTART,
 	SPARSE,
@@ -773,7 +773,7 @@ void Cp2kInputDialog::updatePreviewText()
   case EWALD:
     ewaldtype = "EWALD";
     break;
-  case NONE:
+  case ewaldNONE:
 	ewaldtype = "NONE";
     break;
   case PME:
@@ -802,7 +802,7 @@ void Cp2kInputDialog::updatePreviewText()
    case MOPAC:
 	   scfGuess = "MOPAC";
      break;
-   case NONE:
+   case scfNONE:
 	   scfGuess = "NONE";
      break;
    case RANDOM:
@@ -834,6 +834,7 @@ void Cp2kInputDialog::updatePreviewText()
   default:
     break;
   }
+  /*
   switch (lsdbool) {
   case true:
     lsd = "TRUE";
@@ -842,7 +843,7 @@ void Cp2kInputDialog::updatePreviewText()
 	lsd = "FALSE";
     break;
 
-  }
+  }*/
 
 
   // build up the input file:
