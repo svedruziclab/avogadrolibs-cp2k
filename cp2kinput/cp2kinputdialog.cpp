@@ -215,7 +215,7 @@ void Cp2kInputDialog::connectBasic()
            this, SLOT( updatePreviewText() ) );
   connect( ui.rcutnbSplineSpin, SIGNAL( valueChanged( double ) ),
            this, SLOT( updatePreviewText() ) );
-  connect( ui.ewaldaplhaSpin, SIGNAL( valueChanged( double ) ),
+  connect( ui.ewaldalphaSpin, SIGNAL( valueChanged( double ) ),
            this, SLOT( updatePreviewText() ) );
   connect( ui.ewaldgmaxSpin, SIGNAL( valueChanged( double ) ),
            this, SLOT( updatePreviewText() ) );
