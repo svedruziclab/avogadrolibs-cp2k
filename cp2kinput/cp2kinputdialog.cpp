@@ -133,7 +133,7 @@ enum OTMinimizerOption{
 	DIIS,
 	SD,
 
-	OTMionimizerCount
+	OTMinimizerCount
 };
 
 Cp2kInputDialog::Cp2kInputDialog(QWidget *parent_, Qt::WindowFlags f)
