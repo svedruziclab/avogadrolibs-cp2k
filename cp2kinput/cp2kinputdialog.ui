@@ -81,6 +81,12 @@
    </item>
    <item row="0" column="0">
     <widget class="QTabWidget" name="modeTab">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>300</height>
+      </size>
+     </property>
      <property name="currentIndex">
       <number>2</number>
      </property>
@@ -89,38 +95,8 @@
        <string>&amp;Basic Setup</string>
       </attribute>
       <layout class="QGridLayout">
-       <item row="9" column="3">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QComboBox" name="chargeCombo"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="7" column="1">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>In:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-         </property>
-         <property name="buddy">
-          <cstring>stateCombo</cstring>
-         </property>
-        </widget>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="titleEdit"/>
        </item>
        <item row="6" column="1">
         <widget class="QLabel" name="label_2">
@@ -189,37 +165,7 @@
          </item>
         </layout>
        </item>
-       <item row="9" column="1">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Charge:</string>
-         </property>
-         <property name="buddy">
-          <cstring>chargeCombo</cstring>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="3">
-        <layout class="QHBoxLayout">
-         <item>
-          <widget class="QComboBox" name="stateCombo"/>
-         </item>
-         <item>
-          <spacer>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="10" column="1">
+       <item row="8" column="1">
         <spacer>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -274,9 +220,6 @@
           <cstring>methodCombo</cstring>
          </property>
         </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="titleEdit"/>
        </item>
        <item row="3" column="3">
         <widget class="QLineEdit" name="baseNameEdit">
@@ -447,28 +390,7 @@
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
-         <widget class="QComboBox" name="ewaldtypeCombo">
-          <item>
-           <property name="text">
-            <string>EWALD</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>NONE</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>PME</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>SPME</string>
-           </property>
-          </item>
-         </widget>
+         <widget class="QComboBox" name="ewaldtypeCombo"/>
         </item>
         <item>
          <spacer name="horizontalSpacer_5">
@@ -809,19 +731,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QScrollBar" name="verticalScrollBar">
-       <property name="geometry">
-        <rect>
-         <x>1000</x>
-         <y>0</y>
-         <width>21</width>
-         <height>281</height>
-        </rect>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_25">
        <property name="geometry">
         <rect>
@@ -925,9 +834,7 @@
   <tabstop>calculateCombo</tabstop>
   <tabstop>basisCombo</tabstop>
   <tabstop>functionalCombo</tabstop>
-  <tabstop>stateCombo</tabstop>
   <tabstop>methodCombo</tabstop>
-  <tabstop>chargeCombo</tabstop>
   <tabstop>previewText</tabstop>
   <tabstop>resetAllButton</tabstop>
   <tabstop>defaultsButton</tabstop>
