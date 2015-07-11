@@ -891,7 +891,7 @@ else if(gmethod == "FIST") {
 	    file += "      &SPLINE\n";
 	    file += QString("        EMAX_SPLINE %1\n").arg(emaxSpline);
 	    file += QString("        RCUT_NB %1\n").arg(rcutnb);
-	    file += "      &END SPLINE\n";s
+	    file += "      &END SPLINE\n";
 	    file += "    &END FORCEFIELD\n";
 
 	    file += "    &POISSON\n";
