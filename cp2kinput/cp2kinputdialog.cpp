@@ -78,12 +78,6 @@ enum BasisOption {
   BasisCount
 };
 
-enum StateOption {
-  StateGas = 0,
-  StateWater,
-
-  StateCount
-};
 
 enum MethodOption {
   DFT = 0,
@@ -91,16 +85,6 @@ enum MethodOption {
   HybridQuantumClassical,
 
   MethodCount
-};
-
-enum ChargeOption {
-  ChargeDication = 0,
-  ChargeCation,
-  ChargeNeutral,
-  ChargeAnion,
-  ChargeDianion,
-
-  ChargeCount
 };
 
 //MM tab
@@ -203,11 +187,7 @@ void Cp2kInputDialog::connectBasic()
            this, SLOT( updatePreviewText() ) );
   connect(ui.basisCombo, SIGNAL(currentIndexChanged(int)),
           this, SLOT(updateTitlePlaceholder()));
-  connect( ui.stateCombo, SIGNAL( currentIndexChanged( int ) ),
-           this, SLOT( updatePreviewText() ) );
   connect( ui.methodCombo, SIGNAL( currentIndexChanged( int ) ),
-           this, SLOT( updatePreviewText() ) );
-  connect( ui.chargeCombo, SIGNAL( currentIndexChanged( int ) ),
            this, SLOT( updatePreviewText() ) );
   connect( ui.ewaldtypeCombo, SIGNAL( currentIndexChanged( int ) ),
            this, SLOT( updatePreviewText() ) );
@@ -255,9 +235,7 @@ void Cp2kInputDialog::buildOptions()
   buildCalculateOptions();
   buildFunctionalOptions();
   buildBasisOptions();
-  buildStateOptions();
   buildMethodOptions();
-  buildChargeOptions();
   buildEWALDTypeOptions();
   buildSCFGuessOptions();
   buildOTMinimizerOptions();
@@ -269,9 +247,7 @@ void Cp2kInputDialog::updateOptionCache()
   m_optionCache.insert(ui.calculateCombo, ui.calculateCombo->currentIndex());
   m_optionCache.insert(ui.functionalCombo, ui.functionalCombo->currentIndex());
   m_optionCache.insert(ui.basisCombo, ui.basisCombo->currentIndex());
-  m_optionCache.insert(ui.stateCombo, ui.stateCombo->currentIndex());
   m_optionCache.insert(ui.methodCombo, ui.methodCombo->currentIndex());
-  m_optionCache.insert(ui.chargeCombo, ui.chargeCombo->currentIndex());
   m_optionCache.insert(ui.ewaldtypeCombo, ui.ewaldtypeCombo->currentIndex());
   m_optionCache.insert(ui.scfguessComboBox, ui.scfguessComboBox->currentIndex());
   m_optionCache.insert(ui.otminimizerComboBox, ui.otminimizerComboBox->currentIndex());
@@ -365,23 +341,6 @@ void Cp2kInputDialog::buildBasisOptions()
   }
 }
 
-void Cp2kInputDialog::buildStateOptions()
-{
-  for (int i = 0; i < static_cast<int>(StateCount); ++i) {
-    QString text = "";
-    switch (static_cast<StateOption>(i)) {
-    case StateGas:
-      text = tr("Gas");
-      break;
-    case StateWater:
-      text = tr("Water");
-      break;
-    default:
-      break;
-    }
-    ui.stateCombo->addItem(text);
-  }
-}
 
 void Cp2kInputDialog::buildMethodOptions()
 {
@@ -401,33 +360,6 @@ void Cp2kInputDialog::buildMethodOptions()
       break;
     }
     ui.methodCombo->addItem(text);
-  }
-}
-
-void Cp2kInputDialog::buildChargeOptions()
-{
-  for (int i = 0; i < static_cast<int>(ChargeCount); ++i) {
-    QString text = "";
-    switch (static_cast<ChargeOption>(i)) {
-    case ChargeDication:
-      text = tr("Dication");
-      break;
-    case ChargeCation:
-      text = tr("Cation");
-      break;
-    case ChargeNeutral:
-      text = tr("Neutral");
-      break;
-    case ChargeAnion:
-      text = tr("Anion");
-      break;
-    case ChargeDianion:
-      text = tr("Dianion");
-      break;
-    default:
-      break;
-    }
-    ui.chargeCombo->addItem(text);
   }
 }
 
@@ -522,9 +454,7 @@ void Cp2kInputDialog::setBasicDefaults()
   ui.calculateCombo->setCurrentIndex( CalculateEnergy );
   ui.functionalCombo->setCurrentIndex( FunctionalBLYP );
   ui.basisCombo->setCurrentIndex( BasisSZVGTH );
-  ui.stateCombo->setCurrentIndex( StateGas );
   ui.methodCombo->setCurrentIndex( DFT );
-  ui.chargeCombo->setCurrentIndex( ChargeNeutral );
   ui.ewaldtypeCombo->setCurrentIndex( SPME );
   ui.scfguessComboBox->setCurrentIndex( ATOMIC );
   ui.otminimizerComboBox->setCurrentIndex( CG );
@@ -641,12 +571,8 @@ void Cp2kInputDialog::updatePreviewText()
         static_cast<FunctionalOption>(ui.functionalCombo->currentIndex()));
   BasisOption basis(
         static_cast<BasisOption>(ui.basisCombo->currentIndex()));
-  StateOption state(
-        static_cast<StateOption>(ui.stateCombo->currentIndex()));
   MethodOption method(
         static_cast<MethodOption>(ui.methodCombo->currentIndex()));
-  ChargeOption charge(
-        static_cast<ChargeOption>(ui.chargeCombo->currentIndex()));
   EWALDTypeOption EWALDType(
         static_cast<EWALDTypeOption>(ui.ewaldtypeCombo->currentIndex()));
   SCFGuessOption SCFGuess(
@@ -745,16 +671,6 @@ void Cp2kInputDialog::updatePreviewText()
      break;
    }
 
-  switch (state) {
-  case StateGas:
-    break;
-  case StateWater:
-    pcm = " $PCM SOLVNT=WATER $END\n";
-    break;
-  default:
-    break;
-  }
-
   switch (method) {
   case DFT:
     gmethod = "DFT";
@@ -784,6 +700,8 @@ void Cp2kInputDialog::updatePreviewText()
     break;
   default:
     break;
+    }
+
   }
 
   switch (SCFGuess) {
@@ -942,7 +860,7 @@ if(gmethod == "DFT") {
   file += "    &XC\n";
   file += QString("      &XC_FUNCTIONAL %1\n").arg(functional);
   file += "      &END XC_FUNCTIONAL\n";
-  file += "    &END XC\n";S
+  file += "    &END XC\n";
 
   file += "  &END DFT\n";
   file += "  &PRINT\n";
@@ -974,7 +892,7 @@ else if(gmethod == "FIST") {
 	    file += "      &SPLINE\n";
 	    file += QString("        EMAX_SPLINE %1\n").arg(emaxSpline);
 	    file += QString("        RCUT_NB %1\n").arg(rcutnb);
-	    file += "      &END SPLINE\n";
+	    file += "      &END SPLINE\n";s
 	    file += "    &END FORCEFIELD\n";
 
 	    file += "    &POISSON\n";
