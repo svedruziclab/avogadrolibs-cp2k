@@ -702,7 +702,6 @@ void Cp2kInputDialog::updatePreviewText()
     break;
     }
 
-  }
 
   switch (SCFGuess) {
    case ATOMIC:
