@@ -942,22 +942,7 @@ if(gmethod == "DFT") {
   file += "    &XC\n";
   file += QString("      &XC_FUNCTIONAL %1\n").arg(functional);
   file += "      &END XC_FUNCTIONAL\n";
-  file += "    &END XC\n";
-
-  file += "    &SCF\n";
-  file += "      SCF_GUESS ATOMIC\n";
-  file += "      EPS_SCF 1.0E-7\n";
-  file += "      MAX_SCF 300\n";
-  file += "      &DIAGONALIZATION\n";
-  file += "        ALGORITHM STANDARD\n";
-  file += "      &END DIAGONALIZATION\n";
-  file += "      &MIXING\n";
-  file += "        METHOD BROYDEN_MIXING\n";
-  file += "        ALPHA 0.4\n";
-  file += "        NBROYDEN 8\n";
-  file += "      &END MIXING\n";
-
-  file += "    &END SCF\n";
+  file += "    &END XC\n";S
 
   file += "  &END DFT\n";
   file += "  &PRINT\n";
